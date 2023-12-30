@@ -36,4 +36,9 @@ Capture selection. Click and drag to mark the area you want:
 
     ebin-scrot selection
 
-I recommend binding both options to hotkeys.
+I recommend binding both options to hotkeys. The images are stored in
+~/Images/screenshots. It will also automatically be copied to your clipboard.
+
+## Configuring
+
+You can easily change the colors by editing the beginning of the scrot.c.

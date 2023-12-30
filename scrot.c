@@ -12,29 +12,21 @@
 #include "drw/drw.h"
 #include "drw/util.h"
 
-#define LENGTH(X)               (sizeof X / sizeof X[0])
 #define MAX(A, B)               ((A) > (B) ? (A) : (B))
 #define MIN(A, B)               ((A) < (B) ? (A) : (B))
 
-
 // Config
 static const char col_black[]       = "#000000";
-static const char col_gray[]       = "#444444";
 static const char col_main[]        = "#ddf00a";
 static const char *colors[][3]      = {
-	/* fg         bg        border   */
-	{  col_black, col_main, col_main },
-	{  col_main,  col_main, col_main },
-	{  col_gray,  col_main, col_gray },
+	/* fg         bg       */
+	{  col_main,  col_black },
 };
 
 // Globals
-
 Drw *drw;
-Clr *blk;
 Clr *ylw;
 XImage *image;
-
 
 void close_x() {
 	Display *dpy = drw->dpy;
@@ -46,7 +38,6 @@ void close_x() {
 	exit(0);
 }
 
-
 void draw() {
 	static int f = 0;
 	f++;
@@ -55,13 +46,8 @@ void draw() {
 	width = DisplayWidth(drw->dpy, drw->screen);
 	height = DisplayHeight(drw->dpy, drw->screen);
 
-
 	// Put frame on screen
 	drw_map(drw, drw->root, 0, 0, width, height);
-
-	// Clear pixmap
-	drw_setscheme(drw, blk);
-	drw_rect(drw, 0, 0, width, height, 1, 0);
 }
 
 void draw_selection_rect(int sx, int sy, int ex, int ey) {
@@ -76,7 +62,6 @@ void draw_selection_rect(int sx, int sy, int ex, int ey) {
 	drw_rect(drw, tx, ty, w, h, 0, 0);
 }
 
-
 void xinit() {
 	Display *dpy = XOpenDisplay(NULL);
 	if (dpy == NULL) {
@@ -84,24 +69,18 @@ void xinit() {
 	}
 
 	int screen = DefaultScreen(dpy);
-
 	Window root = DefaultRootWindow(dpy);
-
 	unsigned long black, white;
 	black = BlackPixel(dpy, screen);
 	white = WhitePixel(dpy, screen);
-
 	unsigned width, height;
 	width = DisplayWidth(dpy, screen);
 	height = DisplayHeight(dpy, screen);
 
-	const int x = 0;
-	const int y = 0;
-
 	XSetWindowAttributes swa;
 	swa.override_redirect = True;
 	swa.event_mask = KeyPressMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask;
-	Window win = XCreateWindow(dpy, root, x, y, width, height, 0,
+	Window win = XCreateWindow(dpy, root, 0, 0, width, height, 0,
 			CopyFromParent, CopyFromParent, CopyFromParent,
 			CWOverrideRedirect | CWEventMask, &swa);
 
@@ -116,9 +95,8 @@ void xinit() {
 	XSelectInput(drw->dpy, drw->root, swa.event_mask);
 	XGrabKeyboard(drw->dpy, drw->root, GrabModeSync, 1, GrabModeSync, CurrentTime);
 
-	blk = drw_scm_create(drw, colors[0], 3);
-	ylw = drw_scm_create(drw, colors[1], 3);
-	drw_setscheme(drw, blk);
+	ylw = drw_scm_create(drw, colors[0], 3);
+	drw_setscheme(drw, ylw);
 }
 
 void take_screenshot() {
